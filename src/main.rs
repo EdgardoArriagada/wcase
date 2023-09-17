@@ -38,7 +38,7 @@ fn main() {
 
 fn get_case(word: &str) -> String {
     let mut result = String::new();
-    if word.contains(' ') {
+    if word.contains(' ') || word.contains('-') && word.contains('_') {
         return "none".into();
     }
 
@@ -84,8 +84,10 @@ mod tests {
     fn test_get_case() {
         assert_eq!(get_case("helloworld"), "flat");
         assert_eq!(get_case("HELLOWORLD"), "upper");
-        assert_eq!(get_case("hello world"), "none");
         assert_eq!(get_case("HelloWorld"), "pascal");
         assert_eq!(get_case("helloWorld"), "camel");
+
+        assert_eq!(get_case("hello world"), "none");
+        assert_eq!(get_case("hello-new_world"), "none");
     }
 }
