@@ -28,14 +28,6 @@ pub struct Args {
     #[clap(long)]
     pub all_caps: bool,
 
-    /// transform to camel snake case
-    #[clap(long)]
-    pub camel_snake: bool,
-
-    // transform to pascel snake case
-    #[clap(long)]
-    pub pascal_snake: bool,
-
     /// transform to kebab case
     #[clap(long)]
     pub kebab: bool,
@@ -43,10 +35,6 @@ pub struct Args {
     /// transform to train case
     #[clap(long)]
     pub train: bool,
-
-    /// transform to http header case
-    #[clap(long)]
-    pub http_header: bool,
 
     /// word to transform
     #[clap(long, short)]
