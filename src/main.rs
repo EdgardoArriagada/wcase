@@ -6,6 +6,9 @@ use regex::Regex;
 
 use clap::Parser;
 
+static CAMEL_REGEX: &str = r"^[a-z]+(?:[A-Z][a-z]+)*$";
+static PASCAL_REGEX: &str = r"^[A-Z][a-z]+(?:[A-Z][a-z]+)*$";
+
 fn main() {
     let args = Args::parse();
 
@@ -46,12 +49,12 @@ fn get_case(word: &str) -> String {
             return "upper".into();
         }
 
-        let camel_case = Regex::new(r"^[a-z]+(?:[A-Z][a-z]+)*$").unwrap();
+        let camel_case = Regex::new(CAMEL_REGEX).unwrap();
         if camel_case.is_match(word) {
             return "camel".into();
         }
 
-        let pascal_case = Regex::new(r"^[A-Z][a-z]+(?:[A-Z][a-z]+)*$").unwrap();
+        let pascal_case = Regex::new(PASCAL_REGEX).unwrap();
         if pascal_case.is_match(word) {
             return "pascal".into();
         }
