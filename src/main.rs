@@ -21,7 +21,7 @@ fn main() {
 
     let result = match args {
         Args { flat: true, .. } => flat_case(&args.word),
-        Args { upper: true, .. } => "upper case".into(),
+        Args { upper: true, .. } => upper_case(&args.word),
         Args { camel: true, .. } => "camel case".into(),
         Args { pascal: true, .. } => "pascal case".into(),
         Args { snake: true, .. } => "snake case".into(),
@@ -80,6 +80,10 @@ fn flat_case(word: &str) -> String {
     word.replace("-", "").replace("_", "").to_lowercase()
 }
 
+fn upper_case(word: &str) -> String {
+    word.replace("-", "").replace("_", "").to_uppercase()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -94,6 +98,18 @@ mod tests {
         assert_eq!(flat_case("HELLO_WORLD"), "helloworld");
         assert_eq!(flat_case("hello-world"), "helloworld");
         assert_eq!(flat_case("HELLO-WORLD"), "helloworld");
+    }
+
+    #[test]
+    fn test_upper_case() {
+        assert_eq!(upper_case("helloworld"), "HELLOWORLD");
+        assert_eq!(upper_case("HELLOWORLD"), "HELLOWORLD");
+        assert_eq!(upper_case("helloWorld"), "HELLOWORLD");
+        assert_eq!(upper_case("HelloWorld"), "HELLOWORLD");
+        assert_eq!(upper_case("hello_world"), "HELLOWORLD");
+        assert_eq!(upper_case("HELLO_WORLD"), "HELLOWORLD");
+        assert_eq!(upper_case("hello-world"), "HELLOWORLD");
+        assert_eq!(upper_case("HELLO-WORLD"), "HELLOWORLD");
     }
 
     #[test]
