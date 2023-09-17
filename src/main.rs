@@ -22,7 +22,7 @@ fn main() {
     let result = match args {
         Args { flat: true, .. } => flat_case(&args.word),
         Args { upper: true, .. } => upper_case(&args.word),
-        Args { camel: true, .. } => "camel case".into(),
+        Args { camel: true, .. } => camel_case(&args.word, case),
         Args { pascal: true, .. } => "pascal case".into(),
         Args { snake: true, .. } => "snake case".into(),
         Args { all_caps: true, .. } => "all_caps case".into(),
@@ -76,12 +76,48 @@ fn get_case(word: &str) -> String {
     return "none".into();
 }
 
+fn capitalize_first_letter(word: &str) -> String {
+    let mut v: Vec<char> = word.chars().collect();
+    v[0] = v[0].to_uppercase().nth(0).unwrap();
+    return v.into_iter().collect();
+}
+
+fn lower_first_letter(word: &str) -> String {
+    let mut v: Vec<char> = word.chars().collect();
+    v[0] = v[0].to_lowercase().nth(0).unwrap();
+    return v.into_iter().collect();
+}
+
 fn flat_case(word: &str) -> String {
     word.replace("-", "").replace("_", "").to_lowercase()
 }
 
 fn upper_case(word: &str) -> String {
     word.replace("-", "").replace("_", "").to_uppercase()
+}
+
+fn camel_case(word: &str, case: String) -> String {
+    match case.as_str() {
+        "camel" => return word.to_string(),
+        "pascal" => return lower_first_letter(word),
+        "upper" => return word.to_string(),
+        _ => (),
+    }
+
+    let mut result = String::new();
+    let mut first = true;
+
+    for part in word.split(|c| c == '-' || c == '_') {
+        if first {
+            result.push_str(&part.to_lowercase());
+            first = false;
+        } else {
+            result.push_str(&part[..1].to_uppercase());
+            result.push_str(&part[1..].to_lowercase());
+        }
+    }
+
+    lower_first_letter(&result)
 }
 
 #[cfg(test)]
@@ -110,6 +146,22 @@ mod tests {
         assert_eq!(upper_case("HELLO_WORLD"), "HELLOWORLD");
         assert_eq!(upper_case("hello-world"), "HELLOWORLD");
         assert_eq!(upper_case("HELLO-WORLD"), "HELLOWORLD");
+    }
+
+    #[test]
+    fn test_camel_case() {
+        fn camel_case_helper(word: &str) -> String {
+            camel_case(word, get_case(word))
+        }
+
+        assert_eq!(camel_case_helper("helloworld"), "helloworld"); // no camel_case
+        assert_eq!(camel_case_helper("HELLOWORLD"), "HELLOWORLD"); // no camel_case
+        assert_eq!(camel_case_helper("helloWorld"), "helloWorld");
+        assert_eq!(camel_case_helper("HelloWorld"), "helloWorld");
+        assert_eq!(camel_case_helper("hello_world"), "helloWorld");
+        assert_eq!(camel_case_helper("HELLO_WORLD"), "helloWorld");
+        assert_eq!(camel_case_helper("hello-world"), "helloWorld");
+        assert_eq!(camel_case_helper("HELLO-WORLD"), "helloWorld");
     }
 
     #[test]
