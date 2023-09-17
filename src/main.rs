@@ -72,7 +72,7 @@ fn main() {
         Args { upper: true, .. } => upper_case(&args.word),
         Args { camel: true, .. } => camel_case(&args.word, case),
         Args { pascal: true, .. } => pascal_case(&args.word, case),
-        Args { snake: true, .. } => "snake case".into(),
+        Args { snake: true, .. } => snake_case(&args.word, case),
         Args { all_caps: true, .. } => "all_caps case".into(),
         Args { kebab: true, .. } => "kebab case".into(),
         Args { train: true, .. } => "train case".into(),
@@ -181,6 +181,38 @@ fn pascal_case(word: &str, case: Case) -> String {
     capitalize_first_letter(&camel_case(word, case))
 }
 
+fn snake_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Snake => return word.to_string(),
+        Case::AllCaps => return word.to_lowercase(),
+        Case::Flat => return word.to_string(),
+        Case::Upper => return word.to_string(),
+        Case::Kebab => return word.replace("-", "_"),
+        Case::Train => return word.replace("-", "_").to_lowercase(),
+        _ => (),
+    }
+
+    let mut result = String::new();
+    let mut first = true;
+
+    for c in word.chars() {
+        if first {
+            result.push(c.to_lowercase().nth(0).unwrap());
+            first = false;
+            continue;
+        }
+
+        if c.is_uppercase() {
+            result.push('_');
+            result.push(c.to_lowercase().nth(0).unwrap());
+        } else {
+            result.push(c);
+        }
+    }
+
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -239,6 +271,22 @@ mod tests {
         assert_eq!(pascal_case_helper("HELLO_WORLD"), "HelloWorld");
         assert_eq!(pascal_case_helper("hello-world"), "HelloWorld");
         assert_eq!(pascal_case_helper("HELLO-WORLD"), "HelloWorld");
+    }
+
+    #[test]
+    fn test_snake_case() {
+        fn snake_case_helper(word: &str) -> String {
+            snake_case(word, get_case(word))
+        }
+
+        assert_eq!(snake_case_helper("helloworld"), "helloworld");
+        assert_eq!(snake_case_helper("HELLOWORLD"), "HELLOWORLD");
+        assert_eq!(snake_case_helper("helloWorld"), "hello_world");
+        assert_eq!(snake_case_helper("HelloWorld"), "hello_world");
+        assert_eq!(snake_case_helper("hello_world"), "hello_world");
+        assert_eq!(snake_case_helper("HELLO_WORLD"), "hello_world");
+        assert_eq!(snake_case_helper("hello-world"), "hello_world");
+        assert_eq!(snake_case_helper("HELLO-WORLD"), "hello_world");
     }
 
     #[test]
