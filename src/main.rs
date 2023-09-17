@@ -73,9 +73,9 @@ fn main() {
         Args { camel: true, .. } => camel_case(&args.word, case),
         Args { pascal: true, .. } => pascal_case(&args.word, case),
         Args { snake: true, .. } => snake_case(&args.word, case),
-        Args { all_caps: true, .. } => "all_caps case".into(),
-        Args { kebab: true, .. } => "kebab case".into(),
-        Args { train: true, .. } => "train case".into(),
+        Args { all_caps: true, .. } => all_caps_case(&args.word, case),
+        Args { kebab: true, .. } => kebab_case(&args.word, case),
+        Args { train: true, .. } => train_case(&args.word, case),
         _ => case.to_string(),
     };
 
@@ -213,6 +213,48 @@ fn snake_case(word: &str, case: Case) -> String {
     result
 }
 
+fn all_caps_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Snake => return word.to_uppercase(),
+        Case::AllCaps => return word.to_string(),
+        Case::Flat => return word.to_uppercase(),
+        Case::Upper => return word.to_uppercase(),
+        Case::Kebab => return word.replace("-", "_").to_uppercase(),
+        Case::Train => return word.replace("-", "_").to_uppercase(),
+        _ => (),
+    }
+
+    snake_case(word, case).to_uppercase()
+}
+
+fn kebab_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Snake => return word.replace("_", "-"),
+        Case::AllCaps => return word.replace("_", "-").to_lowercase(),
+        Case::Flat => return word.to_string(),
+        Case::Upper => return word.to_lowercase(),
+        Case::Kebab => return word.to_string(),
+        Case::Train => return word.to_lowercase(),
+        _ => (),
+    }
+
+    snake_case(word, case).replace("_", "-")
+}
+
+fn train_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Snake => return word.replace("_", "-").to_uppercase(),
+        Case::AllCaps => return word.replace("_", "-"),
+        Case::Flat => return word.to_uppercase(),
+        Case::Upper => return word.to_string(),
+        Case::Kebab => return word.to_uppercase(),
+        Case::Train => return word.to_string(),
+        _ => (),
+    }
+
+    snake_case(word, case).replace("_", "-").to_uppercase()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -287,6 +329,54 @@ mod tests {
         assert_eq!(snake_case_helper("HELLO_WORLD"), "hello_world");
         assert_eq!(snake_case_helper("hello-world"), "hello_world");
         assert_eq!(snake_case_helper("HELLO-WORLD"), "hello_world");
+    }
+
+    #[test]
+    fn test_all_caps_case() {
+        fn all_caps_case_helper(word: &str) -> String {
+            all_caps_case(word, get_case(word))
+        }
+
+        assert_eq!(all_caps_case_helper("helloworld"), "HELLOWORLD");
+        assert_eq!(all_caps_case_helper("HELLOWORLD"), "HELLOWORLD");
+        assert_eq!(all_caps_case_helper("helloWorld"), "HELLO_WORLD");
+        assert_eq!(all_caps_case_helper("HelloWorld"), "HELLO_WORLD");
+        assert_eq!(all_caps_case_helper("hello_world"), "HELLO_WORLD");
+        assert_eq!(all_caps_case_helper("HELLO_WORLD"), "HELLO_WORLD");
+        assert_eq!(all_caps_case_helper("hello-world"), "HELLO_WORLD");
+        assert_eq!(all_caps_case_helper("HELLO-WORLD"), "HELLO_WORLD");
+    }
+
+    #[test]
+    fn test_kebab_case() {
+        fn kebab_case_helper(word: &str) -> String {
+            kebab_case(word, get_case(word))
+        }
+
+        assert_eq!(kebab_case_helper("helloworld"), "helloworld");
+        assert_eq!(kebab_case_helper("HELLOWORLD"), "helloworld");
+        assert_eq!(kebab_case_helper("helloWorld"), "hello-world");
+        assert_eq!(kebab_case_helper("HelloWorld"), "hello-world");
+        assert_eq!(kebab_case_helper("hello_world"), "hello-world");
+        assert_eq!(kebab_case_helper("HELLO_WORLD"), "hello-world");
+        assert_eq!(kebab_case_helper("hello-world"), "hello-world");
+        assert_eq!(kebab_case_helper("HELLO-WORLD"), "hello-world");
+    }
+
+    #[test]
+    fn test_train_case() {
+        fn train_case_helper(word: &str) -> String {
+            train_case(word, get_case(word))
+        }
+
+        assert_eq!(train_case_helper("helloworld"), "HELLOWORLD");
+        assert_eq!(train_case_helper("HELLOWORLD"), "HELLOWORLD");
+        assert_eq!(train_case_helper("helloWorld"), "HELLO-WORLD");
+        assert_eq!(train_case_helper("HelloWorld"), "HELLO-WORLD");
+        assert_eq!(train_case_helper("hello_world"), "HELLO-WORLD");
+        assert_eq!(train_case_helper("HELLO_WORLD"), "HELLO-WORLD");
+        assert_eq!(train_case_helper("hello-world"), "HELLO-WORLD");
+        assert_eq!(train_case_helper("HELLO-WORLD"), "HELLO-WORLD");
     }
 
     #[test]
