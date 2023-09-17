@@ -37,12 +37,11 @@ fn main() {
 }
 
 fn get_case(word: &str) -> String {
-    let mut result = String::new();
     if word.contains(' ') || word.contains('-') && word.contains('_') {
         return "none".into();
     }
 
-    if !word.contains('-') || !word.contains('_') {
+    if !word.contains('-') && !word.contains('_') {
         if word.to_lowercase() == word {
             return "flat".into();
         } else if word.to_uppercase() == word {
@@ -60,8 +59,12 @@ fn get_case(word: &str) -> String {
         }
     }
 
-    if word.contains('-') {
-        result.push_str("kebab");
+    if word.contains('_') {
+        if word.to_lowercase() == word {
+            return "snake".into();
+        } else if word.to_uppercase() == word {
+            return "all_caps".into();
+        }
     }
 
     return "none".into();
@@ -84,10 +87,13 @@ mod tests {
     fn test_get_case() {
         assert_eq!(get_case("helloworld"), "flat");
         assert_eq!(get_case("HELLOWORLD"), "upper");
-        assert_eq!(get_case("HelloWorld"), "pascal");
         assert_eq!(get_case("helloWorld"), "camel");
+        assert_eq!(get_case("HelloWorld"), "pascal");
+        assert_eq!(get_case("hello_world"), "snake");
+        assert_eq!(get_case("HELLO_WORLD"), "all_caps");
 
         assert_eq!(get_case("hello world"), "none");
         assert_eq!(get_case("hello-new_world"), "none");
+
     }
 }
