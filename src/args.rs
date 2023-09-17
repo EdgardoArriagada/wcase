@@ -36,6 +36,10 @@ pub struct Args {
     #[clap(long)]
     pub train: bool,
 
+    /// transform to spaced case
+    #[clap(long)]
+    pub spaced: bool,
+
     /// word to transform
     #[clap(long, short)]
     pub word: String,

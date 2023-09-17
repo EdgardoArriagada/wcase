@@ -21,6 +21,7 @@ enum Case {
     AllCaps,
     Kebab,
     Train,
+    Spaced,
     None,
 }
 
@@ -35,6 +36,7 @@ impl fmt::Display for Case {
             Case::AllCaps => write!(f, "all_caps"),
             Case::Kebab => write!(f, "kebab"),
             Case::Train => write!(f, "train"),
+            Case::Spaced => write!(f, "spaced"),
             Case::None => write!(f, "none"),
         }
     }
@@ -51,6 +53,7 @@ impl PartialEq for Case {
             (Case::AllCaps, Case::AllCaps) => true,
             (Case::Kebab, Case::Kebab) => true,
             (Case::Train, Case::Train) => true,
+            (Case::Spaced, Case::Spaced) => true,
             (Case::None, Case::None) => true,
             _ => false,
         }
@@ -76,6 +79,7 @@ fn main() {
         Args { all_caps: true, .. } => all_caps_case(&args.word, case),
         Args { kebab: true, .. } => kebab_case(&args.word, case),
         Args { train: true, .. } => train_case(&args.word, case),
+        Args { spaced: true, .. } => spaced_case(&args.word, case),
         _ => case.to_string(),
     };
 
@@ -83,12 +87,18 @@ fn main() {
 }
 
 fn get_case(word: &str) -> Case {
-    if word.contains(' ') || word.contains('-') && word.contains('_') {
+    if word.contains('-') && word.contains('_') {
         return Case::None;
     }
 
+    let word_lower = word.to_lowercase();
+
     if !word.contains('-') && !word.contains('_') {
-        if word.to_lowercase() == word {
+        if word.contains(' ') && word_lower == word {
+            return Case::Spaced;
+        }
+
+        if word_lower == word {
             return Case::Flat;
         } else if word.to_uppercase() == word {
             return Case::Upper;
@@ -106,7 +116,7 @@ fn get_case(word: &str) -> Case {
     }
 
     if word.contains('_') {
-        if word.to_lowercase() == word {
+        if word_lower == word {
             return Case::Snake;
         } else if word.to_uppercase() == word {
             return Case::AllCaps;
@@ -114,7 +124,7 @@ fn get_case(word: &str) -> Case {
     }
 
     if word.contains('-') {
-        if word.to_lowercase() == word {
+        if word_lower == word {
             return Case::Kebab;
         } else if word.to_uppercase() == word {
             return Case::Train;
@@ -136,12 +146,16 @@ fn lower_first_letter(word: &str) -> String {
     return v.into_iter().collect();
 }
 
+fn flat_word(word: &str) -> String {
+    word.replace("-", "").replace("_", "").replace(" ", "")
+}
+
 fn flat_case(word: &str) -> String {
-    word.replace("-", "").replace("_", "").to_lowercase()
+    flat_word(word).to_lowercase()
 }
 
 fn upper_case(word: &str) -> String {
-    word.replace("-", "").replace("_", "").to_uppercase()
+    flat_word(word).to_uppercase()
 }
 
 fn camel_case(word: &str, case: Case) -> String {
@@ -156,7 +170,7 @@ fn camel_case(word: &str, case: Case) -> String {
     let mut result = String::new();
     let mut first = true;
 
-    for part in word.split(|c| c == '-' || c == '_') {
+    for part in word.split(|c| c == '-' || c == '_' || c == ' ') {
         if first {
             result.push_str(&part.to_lowercase());
             first = false;
@@ -189,6 +203,7 @@ fn snake_case(word: &str, case: Case) -> String {
         Case::Upper => return word.to_string(),
         Case::Kebab => return word.replace("-", "_"),
         Case::Train => return word.replace("-", "_").to_lowercase(),
+        Case::Spaced => return word.replace(" ", "_").to_lowercase(),
         _ => (),
     }
 
@@ -255,6 +270,21 @@ fn train_case(word: &str, case: Case) -> String {
     snake_case(word, case).replace("_", "-").to_uppercase()
 }
 
+fn spaced_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Snake => return word.replace("_", " "),
+        Case::AllCaps => return word.replace("_", " ").to_lowercase(),
+        Case::Flat => return word.to_string(),
+        Case::Upper => return word.to_lowercase(),
+        Case::Kebab => return word.replace("-", " "),
+        Case::Train => return word.replace("-", " ").to_lowercase(),
+        Case::Spaced => return word.to_string(),
+        _ => (),
+    }
+
+    snake_case(word, case).replace("_", " ")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -269,6 +299,7 @@ mod tests {
         assert_eq!(flat_case("HELLO_WORLD"), "helloworld");
         assert_eq!(flat_case("hello-world"), "helloworld");
         assert_eq!(flat_case("HELLO-WORLD"), "helloworld");
+        assert_eq!(flat_case("hello world"), "helloworld");
     }
 
     #[test]
@@ -281,6 +312,7 @@ mod tests {
         assert_eq!(upper_case("HELLO_WORLD"), "HELLOWORLD");
         assert_eq!(upper_case("hello-world"), "HELLOWORLD");
         assert_eq!(upper_case("HELLO-WORLD"), "HELLOWORLD");
+        assert_eq!(upper_case("hello world"), "HELLOWORLD");
     }
 
     #[test]
@@ -297,6 +329,7 @@ mod tests {
         assert_eq!(camel_case_helper("HELLO_WORLD"), "helloWorld");
         assert_eq!(camel_case_helper("hello-world"), "helloWorld");
         assert_eq!(camel_case_helper("HELLO-WORLD"), "helloWorld");
+        assert_eq!(camel_case_helper("hello world"), "helloWorld");
     }
 
     #[test]
@@ -313,6 +346,7 @@ mod tests {
         assert_eq!(pascal_case_helper("HELLO_WORLD"), "HelloWorld");
         assert_eq!(pascal_case_helper("hello-world"), "HelloWorld");
         assert_eq!(pascal_case_helper("HELLO-WORLD"), "HelloWorld");
+        assert_eq!(pascal_case_helper("hello world"), "HelloWorld");
     }
 
     #[test]
@@ -329,6 +363,7 @@ mod tests {
         assert_eq!(snake_case_helper("HELLO_WORLD"), "hello_world");
         assert_eq!(snake_case_helper("hello-world"), "hello_world");
         assert_eq!(snake_case_helper("HELLO-WORLD"), "hello_world");
+        assert_eq!(snake_case_helper("hello world"), "hello_world");
     }
 
     #[test]
@@ -345,6 +380,7 @@ mod tests {
         assert_eq!(all_caps_case_helper("HELLO_WORLD"), "HELLO_WORLD");
         assert_eq!(all_caps_case_helper("hello-world"), "HELLO_WORLD");
         assert_eq!(all_caps_case_helper("HELLO-WORLD"), "HELLO_WORLD");
+        assert_eq!(all_caps_case_helper("hello world"), "HELLO_WORLD");
     }
 
     #[test]
@@ -361,6 +397,7 @@ mod tests {
         assert_eq!(kebab_case_helper("HELLO_WORLD"), "hello-world");
         assert_eq!(kebab_case_helper("hello-world"), "hello-world");
         assert_eq!(kebab_case_helper("HELLO-WORLD"), "hello-world");
+        assert_eq!(kebab_case_helper("hello world"), "hello-world");
     }
 
     #[test]
@@ -377,6 +414,24 @@ mod tests {
         assert_eq!(train_case_helper("HELLO_WORLD"), "HELLO-WORLD");
         assert_eq!(train_case_helper("hello-world"), "HELLO-WORLD");
         assert_eq!(train_case_helper("HELLO-WORLD"), "HELLO-WORLD");
+        assert_eq!(train_case_helper("hello world"), "HELLO-WORLD");
+    }
+
+    #[test]
+    fn tesp_spaced_case() {
+        fn spaced_case_helper(word: &str) -> String {
+            spaced_case(word, get_case(word))
+        }
+
+        assert_eq!(spaced_case_helper("helloworld"), "helloworld");
+        assert_eq!(spaced_case_helper("HELLOWORLD"), "helloworld");
+        assert_eq!(spaced_case_helper("helloWorld"), "hello world");
+        assert_eq!(spaced_case_helper("HelloWorld"), "hello world");
+        assert_eq!(spaced_case_helper("hello_world"), "hello world");
+        assert_eq!(spaced_case_helper("HELLO_WORLD"), "hello world");
+        assert_eq!(spaced_case_helper("hello-world"), "hello world");
+        assert_eq!(spaced_case_helper("HELLO-WORLD"), "hello world");
+        assert_eq!(spaced_case_helper("hello world"), "hello world");
     }
 
     #[test]
@@ -389,8 +444,8 @@ mod tests {
         assert_eq!(get_case("HELLO_WORLD"), Case::AllCaps);
         assert_eq!(get_case("hello-world"), Case::Kebab);
         assert_eq!(get_case("HELLO-WORLD"), Case::Train);
+        assert_eq!(get_case("hello world"), Case::Spaced);
 
-        assert_eq!(get_case("hello world"), Case::None);
         assert_eq!(get_case("hello-new_world"), Case::None);
         assert_eq!(get_case("hello-World"), Case::None);
     }
