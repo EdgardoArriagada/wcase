@@ -6,24 +6,30 @@ use clap::Parser;
 fn main() {
     let args = Args::parse();
 
-    match args {
-        Args { flat: true, .. } => println!("flat case"),
-        Args { upper: true, .. } => println!("upper case"),
-        Args { camel: true, .. } => println!("camel case"),
-        Args { pascal: true, .. } => println!("pascal case"),
-        Args { snake: true, .. } => println!("snake case"),
-        Args { all_caps: true, .. } => println!("all_caps case"),
+    let result = match args {
+        Args { flat: true, .. } => flat_case(&args.word),
+        Args { upper: true, .. } => "upper case".into(),
+        Args { camel: true, .. } => "camel case".into(),
+        Args { pascal: true, .. } => "pascal case".into(),
+        Args { snake: true, .. } => "snake case".into(),
+        Args { all_caps: true, .. } => "all_caps case".into(),
         Args {
             camel_snake: true, ..
-        } => println!("camel_snake case"),
+        } => "camel_snake case".into(),
         Args {
             pascal_snake: true, ..
-        } => println!("pascal_snake case"),
-        Args { kebab: true, .. } => println!("kebab case"),
-        Args { train: true, .. } => println!("train case"),
+        } => "pascal_snake case".into(),
+        Args { kebab: true, .. } => "kebab case".into(),
+        Args { train: true, .. } => "train case".into(),
         Args {
             http_header: true, ..
-        } => println!("http_header case"),
-        _ => println!("no match"),
-    }
+        } => "http_header case".into(),
+        _ => "no match".into(),
+    };
+
+    println!("{}", result);
+}
+
+fn flat_case(word: &str) -> String {
+    word.to_lowercase()
 }
