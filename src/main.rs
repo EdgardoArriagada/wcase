@@ -1,4 +1,6 @@
 mod args;
+use std::fmt;
+
 use args::Args;
 
 extern crate regex;
@@ -9,12 +11,58 @@ use clap::Parser;
 static CAMEL_REGEX: &str = r"^[a-z]+(?:[A-Z][a-z]+)*$";
 static PASCAL_REGEX: &str = r"^[A-Z][a-z]+(?:[A-Z][a-z]+)*$";
 
+#[derive(Debug)]
+enum Case {
+    Flat,
+    Upper,
+    Camel,
+    Pascal,
+    Snake,
+    AllCaps,
+    Kebab,
+    Train,
+    None,
+}
+
+impl fmt::Display for Case {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Case::Flat => write!(f, "flat"),
+            Case::Upper => write!(f, "upper"),
+            Case::Camel => write!(f, "camel"),
+            Case::Pascal => write!(f, "pascal"),
+            Case::Snake => write!(f, "snake"),
+            Case::AllCaps => write!(f, "all_caps"),
+            Case::Kebab => write!(f, "kebab"),
+            Case::Train => write!(f, "train"),
+            Case::None => write!(f, "none"),
+        }
+    }
+}
+
+impl PartialEq for Case {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Case::Flat, Case::Flat) => true,
+            (Case::Upper, Case::Upper) => true,
+            (Case::Camel, Case::Camel) => true,
+            (Case::Pascal, Case::Pascal) => true,
+            (Case::Snake, Case::Snake) => true,
+            (Case::AllCaps, Case::AllCaps) => true,
+            (Case::Kebab, Case::Kebab) => true,
+            (Case::Train, Case::Train) => true,
+            (Case::None, Case::None) => true,
+            _ => false,
+        }
+    }
+}
+
 fn main() {
     let args = Args::parse();
 
     let case = get_case(&args.word);
 
-    if case == "none" {
+    if case == Case::None {
         println!("Invalid input");
         return;
     }
@@ -23,57 +71,57 @@ fn main() {
         Args { flat: true, .. } => flat_case(&args.word),
         Args { upper: true, .. } => upper_case(&args.word),
         Args { camel: true, .. } => camel_case(&args.word, case),
-        Args { pascal: true, .. } => "pascal case".into(),
+        Args { pascal: true, .. } => pascal_case(&args.word, case),
         Args { snake: true, .. } => "snake case".into(),
         Args { all_caps: true, .. } => "all_caps case".into(),
         Args { kebab: true, .. } => "kebab case".into(),
         Args { train: true, .. } => "train case".into(),
-        _ => case,
+        _ => case.to_string(),
     };
 
     println!("{}", result);
 }
 
-fn get_case(word: &str) -> String {
+fn get_case(word: &str) -> Case {
     if word.contains(' ') || word.contains('-') && word.contains('_') {
-        return "none".into();
+        return Case::None;
     }
 
     if !word.contains('-') && !word.contains('_') {
         if word.to_lowercase() == word {
-            return "flat".into();
+            return Case::Flat;
         } else if word.to_uppercase() == word {
-            return "upper".into();
+            return Case::Upper;
         }
 
         let camel_case = Regex::new(CAMEL_REGEX).unwrap();
         if camel_case.is_match(word) {
-            return "camel".into();
+            return Case::Camel;
         }
 
         let pascal_case = Regex::new(PASCAL_REGEX).unwrap();
         if pascal_case.is_match(word) {
-            return "pascal".into();
+            return Case::Pascal;
         }
     }
 
     if word.contains('_') {
         if word.to_lowercase() == word {
-            return "snake".into();
+            return Case::Snake;
         } else if word.to_uppercase() == word {
-            return "all_caps".into();
+            return Case::AllCaps;
         }
     }
 
     if word.contains('-') {
         if word.to_lowercase() == word {
-            return "kebab".into();
+            return Case::Kebab;
         } else if word.to_uppercase() == word {
-            return "train".into();
+            return Case::Train;
         }
     }
 
-    return "none".into();
+    return Case::None;
 }
 
 fn capitalize_first_letter(word: &str) -> String {
@@ -96,11 +144,12 @@ fn upper_case(word: &str) -> String {
     word.replace("-", "").replace("_", "").to_uppercase()
 }
 
-fn camel_case(word: &str, case: String) -> String {
-    match case.as_str() {
-        "camel" => return word.to_string(),
-        "pascal" => return lower_first_letter(word),
-        "upper" => return word.to_string(),
+fn camel_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Camel => return word.to_string(),
+        Case::Pascal => return lower_first_letter(word),
+        Case::Flat => return word.to_string(),
+        Case::Upper => return word.to_string(),
         _ => (),
     }
 
@@ -118,6 +167,18 @@ fn camel_case(word: &str, case: String) -> String {
     }
 
     lower_first_letter(&result)
+}
+
+fn pascal_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Camel => return capitalize_first_letter(word),
+        Case::Pascal => return word.to_string(),
+        Case::Flat => return word.to_string(),
+        Case::Upper => return word.to_string(),
+        _ => (),
+    }
+
+    capitalize_first_letter(&camel_case(word, case))
 }
 
 #[cfg(test)]
@@ -165,18 +226,34 @@ mod tests {
     }
 
     #[test]
-    fn test_get_case() {
-        assert_eq!(get_case("helloworld"), "flat");
-        assert_eq!(get_case("HELLOWORLD"), "upper");
-        assert_eq!(get_case("helloWorld"), "camel");
-        assert_eq!(get_case("HelloWorld"), "pascal");
-        assert_eq!(get_case("hello_world"), "snake");
-        assert_eq!(get_case("HELLO_WORLD"), "all_caps");
-        assert_eq!(get_case("hello-world"), "kebab");
-        assert_eq!(get_case("HELLO-WORLD"), "train");
+    fn test_pascal_case() {
+        fn pascal_case_helper(word: &str) -> String {
+            pascal_case(word, get_case(word))
+        }
 
-        assert_eq!(get_case("hello world"), "none");
-        assert_eq!(get_case("hello-new_world"), "none");
-        assert_eq!(get_case("hello-World"), "none");
+        assert_eq!(pascal_case_helper("helloworld"), "helloworld"); // no pascal_case
+        assert_eq!(pascal_case_helper("HELLOWORLD"), "HELLOWORLD"); // no pascal_case
+        assert_eq!(pascal_case_helper("helloWorld"), "HelloWorld");
+        assert_eq!(pascal_case_helper("HelloWorld"), "HelloWorld");
+        assert_eq!(pascal_case_helper("hello_world"), "HelloWorld");
+        assert_eq!(pascal_case_helper("HELLO_WORLD"), "HelloWorld");
+        assert_eq!(pascal_case_helper("hello-world"), "HelloWorld");
+        assert_eq!(pascal_case_helper("HELLO-WORLD"), "HelloWorld");
+    }
+
+    #[test]
+    fn test_get_case() {
+        assert_eq!(get_case("helloworld"), Case::Flat);
+        assert_eq!(get_case("HELLOWORLD"), Case::Upper);
+        assert_eq!(get_case("helloWorld"), Case::Camel);
+        assert_eq!(get_case("HelloWorld"), Case::Pascal);
+        assert_eq!(get_case("hello_world"), Case::Snake);
+        assert_eq!(get_case("HELLO_WORLD"), Case::AllCaps);
+        assert_eq!(get_case("hello-world"), Case::Kebab);
+        assert_eq!(get_case("HELLO-WORLD"), Case::Train);
+
+        assert_eq!(get_case("hello world"), Case::None);
+        assert_eq!(get_case("hello-new_world"), Case::None);
+        assert_eq!(get_case("hello-World"), Case::None);
     }
 }
