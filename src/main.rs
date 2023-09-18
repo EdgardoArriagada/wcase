@@ -178,8 +178,8 @@ fn pascal_case(word: &str, case: Case) -> String {
     match case {
         Case::Camel => return capitalize_first_letter(word),
         Case::Pascal => return word.to_string(),
-        Case::Flat => return word.to_string(),
-        Case::Upper => return word.to_string(),
+        Case::Flat => return capitalize_first_letter(word),
+        Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
         _ => (),
     }
 
@@ -191,7 +191,7 @@ fn snake_case(word: &str, case: Case) -> String {
         Case::Snake => return word.to_string(),
         Case::AllCaps => return word.to_lowercase(),
         Case::Flat => return word.to_string(),
-        Case::Upper => return word.to_string(),
+        Case::Upper => return word.to_lowercase(),
         Case::Kebab => return word.replace("-", "_"),
         Case::Train => return word.replace("-", "_").to_lowercase(),
         Case::Spaced => return word.replace(" ", "_").to_lowercase(),
@@ -283,6 +283,7 @@ mod tests {
     static FLAT: &str = "helloworld";
     static UPPER: &str = "HELLOWORLD";
     static CAMEL: &str = "helloWorld";
+    static BROKEN_PASCAL: &str = "Helloworld";
     static PASCAL: &str = "HelloWorld";
     static SNAKE: &str = "hello_world";
     static ALL_CAPS: &str = "HELLO_WORLD";
@@ -339,8 +340,8 @@ mod tests {
             pascal_case(word, get_case(word))
         }
 
-        assert_eq!(pascal_case_helper(FLAT), FLAT); // no pascal_case
-        assert_eq!(pascal_case_helper(UPPER), UPPER); // no pascal_case
+        assert_eq!(pascal_case_helper(FLAT), BROKEN_PASCAL);
+        assert_eq!(pascal_case_helper(UPPER), BROKEN_PASCAL);
         assert_eq!(pascal_case_helper(CAMEL), PASCAL);
         assert_eq!(pascal_case_helper(PASCAL), PASCAL);
         assert_eq!(pascal_case_helper(SNAKE), PASCAL);
@@ -357,7 +358,7 @@ mod tests {
         }
 
         assert_eq!(snake_case_helper(FLAT), FLAT);
-        assert_eq!(snake_case_helper(UPPER), UPPER);
+        assert_eq!(snake_case_helper(UPPER), FLAT);
         assert_eq!(snake_case_helper(CAMEL), SNAKE);
         assert_eq!(snake_case_helper(PASCAL), SNAKE);
         assert_eq!(snake_case_helper(SNAKE), SNAKE);
