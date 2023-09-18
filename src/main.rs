@@ -1,11 +1,7 @@
 mod args;
 use std::fmt;
-
 use args::Args;
-
-
 use clap::Parser;
-
 
 #[derive(Debug)]
 enum Case {
