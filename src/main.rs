@@ -207,10 +207,8 @@ fn pascal_case(word: &str, case: Case) -> String {
         Case::Pascal => return word.to_string(),
         Case::Flat => return capitalize_first_letter(word),
         Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
-        _ => (),
+        _ => capitalize_first_letter(&camel_case(word, case)),
     }
-
-    capitalize_first_letter(&camel_case(word, case))
 }
 
 fn camel_or_pascal_to_token(word: &str, token: char) -> String {
@@ -244,10 +242,8 @@ fn snake_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", "_"),
         Case::Train => return word.replace("-", "_").to_lowercase(),
         Case::Spaced => return word.replace(" ", "_").to_lowercase(),
-        _ => (),
+        _ => camel_or_pascal_to_token(word, '_'),
     }
-
-    camel_or_pascal_to_token(word, '_')
 }
 
 fn all_caps_case(word: &str, case: Case) -> String {
@@ -259,10 +255,8 @@ fn all_caps_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", "_").to_uppercase(),
         Case::Train => return word.replace("-", "_"),
         Case::Spaced => return word.replace(" ", "_").to_uppercase(),
-        _ => (),
+        _ => camel_or_pascal_to_token(word, '_').to_uppercase(),
     }
-
-    camel_or_pascal_to_token(word, '_').to_uppercase()
 }
 
 fn kebab_case(word: &str, case: Case) -> String {
@@ -274,10 +268,8 @@ fn kebab_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.to_string(),
         Case::Train => return word.to_lowercase(),
         Case::Spaced => return word.replace(" ", "-"),
-        _ => (),
+        _ => camel_or_pascal_to_token(word, '-'),
     }
-
-    camel_or_pascal_to_token(word, '-')
 }
 
 fn train_case(word: &str, case: Case) -> String {
@@ -289,10 +281,8 @@ fn train_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.to_uppercase(),
         Case::Train => return word.to_string(),
         Case::Spaced => return word.replace(" ", "-").to_uppercase(),
-        _ => (),
+        _ => camel_or_pascal_to_token(word, '-').to_uppercase(),
     }
-
-    camel_or_pascal_to_token(word, '-').to_uppercase()
 }
 
 fn spaced_case(word: &str, case: Case) -> String {
@@ -304,10 +294,8 @@ fn spaced_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", " "),
         Case::Train => return word.replace("-", " ").to_lowercase(),
         Case::Spaced => return word.to_string(),
-        _ => (),
+        _ => camel_or_pascal_to_token(word, ' '),
     }
-
-    camel_or_pascal_to_token(word, ' ')
 }
 
 #[cfg(test)]
