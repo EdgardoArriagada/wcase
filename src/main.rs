@@ -224,9 +224,9 @@ fn all_caps_case(word: &str, case: Case) -> String {
         Case::Snake => return word.to_uppercase(),
         Case::AllCaps => return word.to_string(),
         Case::Flat => return word.to_uppercase(),
-        Case::Upper => return word.to_uppercase(),
+        Case::Upper => return word.to_string(),
         Case::Kebab => return word.replace("-", "_").to_uppercase(),
-        Case::Train => return word.replace("-", "_").to_uppercase(),
+        Case::Train => return word.replace("-", "_"),
         _ => (),
     }
 
