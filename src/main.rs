@@ -88,8 +88,20 @@ fn main() {
 }
 
 fn get_case(word: &str) -> Case {
-    if word.contains('-') && word.contains('_') {
-        return Case::None;
+    if word.contains('-') {
+        if word.contains(' ') || word.contains('_') {
+            return Case::None;
+        }
+    }
+    if word.contains('_') {
+        if word.contains(' ') || word.contains('-') {
+            return Case::None;
+        }
+    }
+    if word.contains(' ') {
+        if word.contains('-') || word.contains('_') {
+            return Case::None;
+        }
     }
 
     let word_lower = word.to_lowercase();
@@ -459,5 +471,7 @@ mod tests {
 
         assert_eq!(get_case("hello-new_world"), Case::None);
         assert_eq!(get_case("hello-World"), Case::None);
+        assert_eq!(get_case("hello new-world"), Case::None);
+        assert_eq!(get_case("hello_new-world of programming"), Case::None);
     }
 }
