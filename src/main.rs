@@ -1,7 +1,7 @@
 mod args;
-use std::fmt;
 use args::Args;
 use clap::Parser;
+use std::fmt;
 
 #[derive(Debug)]
 enum Case {
@@ -280,30 +280,40 @@ fn spaced_case(word: &str, case: Case) -> String {
 mod tests {
     use super::*;
 
+    static FLAT: &str = "helloworld";
+    static UPPER: &str = "HELLOWORLD";
+    static CAMEL: &str = "helloWorld";
+    static PASCAL: &str = "HelloWorld";
+    static SNAKE: &str = "hello_world";
+    static ALL_CAPS: &str = "HELLO_WORLD";
+    static KEBAB: &str = "hello-world";
+    static TRAIN: &str = "HELLO-WORLD";
+    static SPACED: &str = "hello world";
+
     #[test]
     fn test_flat_case() {
-        assert_eq!(flat_case("helloworld"), "helloworld");
-        assert_eq!(flat_case("HELLOWORLD"), "helloworld");
-        assert_eq!(flat_case("helloWorld"), "helloworld");
-        assert_eq!(flat_case("HelloWorld"), "helloworld");
-        assert_eq!(flat_case("hello_world"), "helloworld");
-        assert_eq!(flat_case("HELLO_WORLD"), "helloworld");
-        assert_eq!(flat_case("hello-world"), "helloworld");
-        assert_eq!(flat_case("HELLO-WORLD"), "helloworld");
-        assert_eq!(flat_case("hello world"), "helloworld");
+        assert_eq!(flat_case(FLAT), FLAT);
+        assert_eq!(flat_case(UPPER), FLAT);
+        assert_eq!(flat_case(CAMEL), FLAT);
+        assert_eq!(flat_case(PASCAL), FLAT);
+        assert_eq!(flat_case(SNAKE), FLAT);
+        assert_eq!(flat_case(ALL_CAPS), FLAT);
+        assert_eq!(flat_case(KEBAB), FLAT);
+        assert_eq!(flat_case(TRAIN), FLAT);
+        assert_eq!(flat_case(SPACED), FLAT);
     }
 
     #[test]
     fn test_upper_case() {
-        assert_eq!(upper_case("helloworld"), "HELLOWORLD");
-        assert_eq!(upper_case("HELLOWORLD"), "HELLOWORLD");
-        assert_eq!(upper_case("helloWorld"), "HELLOWORLD");
-        assert_eq!(upper_case("HelloWorld"), "HELLOWORLD");
-        assert_eq!(upper_case("hello_world"), "HELLOWORLD");
-        assert_eq!(upper_case("HELLO_WORLD"), "HELLOWORLD");
-        assert_eq!(upper_case("hello-world"), "HELLOWORLD");
-        assert_eq!(upper_case("HELLO-WORLD"), "HELLOWORLD");
-        assert_eq!(upper_case("hello world"), "HELLOWORLD");
+        assert_eq!(upper_case(FLAT), UPPER);
+        assert_eq!(upper_case(UPPER), UPPER);
+        assert_eq!(upper_case(CAMEL), UPPER);
+        assert_eq!(upper_case(PASCAL), UPPER);
+        assert_eq!(upper_case(SNAKE), UPPER);
+        assert_eq!(upper_case(ALL_CAPS), UPPER);
+        assert_eq!(upper_case(KEBAB), UPPER);
+        assert_eq!(upper_case(TRAIN), UPPER);
+        assert_eq!(upper_case(SPACED), UPPER);
     }
 
     #[test]
@@ -312,15 +322,15 @@ mod tests {
             camel_case(word, get_case(word))
         }
 
-        assert_eq!(camel_case_helper("helloworld"), "helloworld"); // no camel_case
-        assert_eq!(camel_case_helper("HELLOWORLD"), "HELLOWORLD"); // no camel_case
-        assert_eq!(camel_case_helper("helloWorld"), "helloWorld");
-        assert_eq!(camel_case_helper("HelloWorld"), "helloWorld");
-        assert_eq!(camel_case_helper("hello_world"), "helloWorld");
-        assert_eq!(camel_case_helper("HELLO_WORLD"), "helloWorld");
-        assert_eq!(camel_case_helper("hello-world"), "helloWorld");
-        assert_eq!(camel_case_helper("HELLO-WORLD"), "helloWorld");
-        assert_eq!(camel_case_helper("hello world"), "helloWorld");
+        assert_eq!(camel_case_helper(FLAT), FLAT); // no camel_case
+        assert_eq!(camel_case_helper(UPPER), UPPER); // no camel_case
+        assert_eq!(camel_case_helper(CAMEL), CAMEL);
+        assert_eq!(camel_case_helper(PASCAL), CAMEL);
+        assert_eq!(camel_case_helper(SNAKE), CAMEL);
+        assert_eq!(camel_case_helper(ALL_CAPS), CAMEL);
+        assert_eq!(camel_case_helper(KEBAB), CAMEL);
+        assert_eq!(camel_case_helper(TRAIN), CAMEL);
+        assert_eq!(camel_case_helper(SPACED), CAMEL);
     }
 
     #[test]
@@ -329,15 +339,15 @@ mod tests {
             pascal_case(word, get_case(word))
         }
 
-        assert_eq!(pascal_case_helper("helloworld"), "helloworld"); // no pascal_case
-        assert_eq!(pascal_case_helper("HELLOWORLD"), "HELLOWORLD"); // no pascal_case
-        assert_eq!(pascal_case_helper("helloWorld"), "HelloWorld");
-        assert_eq!(pascal_case_helper("HelloWorld"), "HelloWorld");
-        assert_eq!(pascal_case_helper("hello_world"), "HelloWorld");
-        assert_eq!(pascal_case_helper("HELLO_WORLD"), "HelloWorld");
-        assert_eq!(pascal_case_helper("hello-world"), "HelloWorld");
-        assert_eq!(pascal_case_helper("HELLO-WORLD"), "HelloWorld");
-        assert_eq!(pascal_case_helper("hello world"), "HelloWorld");
+        assert_eq!(pascal_case_helper(FLAT), FLAT); // no pascal_case
+        assert_eq!(pascal_case_helper(UPPER), UPPER); // no pascal_case
+        assert_eq!(pascal_case_helper(CAMEL), PASCAL);
+        assert_eq!(pascal_case_helper(PASCAL), PASCAL);
+        assert_eq!(pascal_case_helper(SNAKE), PASCAL);
+        assert_eq!(pascal_case_helper(ALL_CAPS), PASCAL);
+        assert_eq!(pascal_case_helper(KEBAB), PASCAL);
+        assert_eq!(pascal_case_helper(TRAIN), PASCAL);
+        assert_eq!(pascal_case_helper(SPACED), PASCAL);
     }
 
     #[test]
@@ -346,15 +356,15 @@ mod tests {
             snake_case(word, get_case(word))
         }
 
-        assert_eq!(snake_case_helper("helloworld"), "helloworld");
-        assert_eq!(snake_case_helper("HELLOWORLD"), "HELLOWORLD");
-        assert_eq!(snake_case_helper("helloWorld"), "hello_world");
-        assert_eq!(snake_case_helper("HelloWorld"), "hello_world");
-        assert_eq!(snake_case_helper("hello_world"), "hello_world");
-        assert_eq!(snake_case_helper("HELLO_WORLD"), "hello_world");
-        assert_eq!(snake_case_helper("hello-world"), "hello_world");
-        assert_eq!(snake_case_helper("HELLO-WORLD"), "hello_world");
-        assert_eq!(snake_case_helper("hello world"), "hello_world");
+        assert_eq!(snake_case_helper(FLAT), FLAT);
+        assert_eq!(snake_case_helper(UPPER), UPPER);
+        assert_eq!(snake_case_helper(CAMEL), SNAKE);
+        assert_eq!(snake_case_helper(PASCAL), SNAKE);
+        assert_eq!(snake_case_helper(SNAKE), SNAKE);
+        assert_eq!(snake_case_helper(ALL_CAPS), SNAKE);
+        assert_eq!(snake_case_helper(KEBAB), SNAKE);
+        assert_eq!(snake_case_helper(TRAIN), SNAKE);
+        assert_eq!(snake_case_helper(SPACED), SNAKE);
     }
 
     #[test]
@@ -363,15 +373,15 @@ mod tests {
             all_caps_case(word, get_case(word))
         }
 
-        assert_eq!(all_caps_case_helper("helloworld"), "HELLOWORLD");
-        assert_eq!(all_caps_case_helper("HELLOWORLD"), "HELLOWORLD");
-        assert_eq!(all_caps_case_helper("helloWorld"), "HELLO_WORLD");
-        assert_eq!(all_caps_case_helper("HelloWorld"), "HELLO_WORLD");
-        assert_eq!(all_caps_case_helper("hello_world"), "HELLO_WORLD");
-        assert_eq!(all_caps_case_helper("HELLO_WORLD"), "HELLO_WORLD");
-        assert_eq!(all_caps_case_helper("hello-world"), "HELLO_WORLD");
-        assert_eq!(all_caps_case_helper("HELLO-WORLD"), "HELLO_WORLD");
-        assert_eq!(all_caps_case_helper("hello world"), "HELLO_WORLD");
+        assert_eq!(all_caps_case_helper(FLAT), UPPER);
+        assert_eq!(all_caps_case_helper(UPPER), UPPER);
+        assert_eq!(all_caps_case_helper(CAMEL), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(PASCAL), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(SNAKE), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(ALL_CAPS), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(KEBAB), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(TRAIN), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(SPACED), ALL_CAPS);
     }
 
     #[test]
@@ -380,15 +390,15 @@ mod tests {
             kebab_case(word, get_case(word))
         }
 
-        assert_eq!(kebab_case_helper("helloworld"), "helloworld");
-        assert_eq!(kebab_case_helper("HELLOWORLD"), "helloworld");
-        assert_eq!(kebab_case_helper("helloWorld"), "hello-world");
-        assert_eq!(kebab_case_helper("HelloWorld"), "hello-world");
-        assert_eq!(kebab_case_helper("hello_world"), "hello-world");
-        assert_eq!(kebab_case_helper("HELLO_WORLD"), "hello-world");
-        assert_eq!(kebab_case_helper("hello-world"), "hello-world");
-        assert_eq!(kebab_case_helper("HELLO-WORLD"), "hello-world");
-        assert_eq!(kebab_case_helper("hello world"), "hello-world");
+        assert_eq!(kebab_case_helper(FLAT), FLAT);
+        assert_eq!(kebab_case_helper(UPPER), FLAT);
+        assert_eq!(kebab_case_helper(CAMEL), KEBAB);
+        assert_eq!(kebab_case_helper(PASCAL), KEBAB);
+        assert_eq!(kebab_case_helper(SNAKE), KEBAB);
+        assert_eq!(kebab_case_helper(ALL_CAPS), KEBAB);
+        assert_eq!(kebab_case_helper(KEBAB), KEBAB);
+        assert_eq!(kebab_case_helper(TRAIN), KEBAB);
+        assert_eq!(kebab_case_helper(SPACED), KEBAB);
     }
 
     #[test]
@@ -397,15 +407,15 @@ mod tests {
             train_case(word, get_case(word))
         }
 
-        assert_eq!(train_case_helper("helloworld"), "HELLOWORLD");
-        assert_eq!(train_case_helper("HELLOWORLD"), "HELLOWORLD");
-        assert_eq!(train_case_helper("helloWorld"), "HELLO-WORLD");
-        assert_eq!(train_case_helper("HelloWorld"), "HELLO-WORLD");
-        assert_eq!(train_case_helper("hello_world"), "HELLO-WORLD");
-        assert_eq!(train_case_helper("HELLO_WORLD"), "HELLO-WORLD");
-        assert_eq!(train_case_helper("hello-world"), "HELLO-WORLD");
-        assert_eq!(train_case_helper("HELLO-WORLD"), "HELLO-WORLD");
-        assert_eq!(train_case_helper("hello world"), "HELLO-WORLD");
+        assert_eq!(train_case_helper(FLAT), UPPER);
+        assert_eq!(train_case_helper(UPPER), UPPER);
+        assert_eq!(train_case_helper(CAMEL), TRAIN);
+        assert_eq!(train_case_helper(PASCAL), TRAIN);
+        assert_eq!(train_case_helper(SNAKE), TRAIN);
+        assert_eq!(train_case_helper(ALL_CAPS), TRAIN);
+        assert_eq!(train_case_helper(KEBAB), TRAIN);
+        assert_eq!(train_case_helper(TRAIN), TRAIN);
+        assert_eq!(train_case_helper(SPACED), TRAIN);
     }
 
     #[test]
@@ -414,28 +424,28 @@ mod tests {
             spaced_case(word, get_case(word))
         }
 
-        assert_eq!(spaced_case_helper("helloworld"), "helloworld");
-        assert_eq!(spaced_case_helper("HELLOWORLD"), "helloworld");
-        assert_eq!(spaced_case_helper("helloWorld"), "hello world");
-        assert_eq!(spaced_case_helper("HelloWorld"), "hello world");
-        assert_eq!(spaced_case_helper("hello_world"), "hello world");
-        assert_eq!(spaced_case_helper("HELLO_WORLD"), "hello world");
-        assert_eq!(spaced_case_helper("hello-world"), "hello world");
-        assert_eq!(spaced_case_helper("HELLO-WORLD"), "hello world");
-        assert_eq!(spaced_case_helper("hello world"), "hello world");
+        assert_eq!(spaced_case_helper(FLAT), FLAT);
+        assert_eq!(spaced_case_helper(UPPER), FLAT);
+        assert_eq!(spaced_case_helper(CAMEL), SPACED);
+        assert_eq!(spaced_case_helper(PASCAL), SPACED);
+        assert_eq!(spaced_case_helper(SNAKE), SPACED);
+        assert_eq!(spaced_case_helper(ALL_CAPS), SPACED);
+        assert_eq!(spaced_case_helper(KEBAB), SPACED);
+        assert_eq!(spaced_case_helper(TRAIN), SPACED);
+        assert_eq!(spaced_case_helper(SPACED), SPACED);
     }
 
     #[test]
     fn test_get_case() {
-        assert_eq!(get_case("helloworld"), Case::Flat);
-        assert_eq!(get_case("HELLOWORLD"), Case::Upper);
-        assert_eq!(get_case("helloWorld"), Case::Camel);
-        assert_eq!(get_case("HelloWorld"), Case::Pascal);
-        assert_eq!(get_case("hello_world"), Case::Snake);
-        assert_eq!(get_case("HELLO_WORLD"), Case::AllCaps);
-        assert_eq!(get_case("hello-world"), Case::Kebab);
-        assert_eq!(get_case("HELLO-WORLD"), Case::Train);
-        assert_eq!(get_case("hello world"), Case::Spaced);
+        assert_eq!(get_case(FLAT), Case::Flat);
+        assert_eq!(get_case(UPPER), Case::Upper);
+        assert_eq!(get_case(CAMEL), Case::Camel);
+        assert_eq!(get_case(PASCAL), Case::Pascal);
+        assert_eq!(get_case(SNAKE), Case::Snake);
+        assert_eq!(get_case(ALL_CAPS), Case::AllCaps);
+        assert_eq!(get_case(KEBAB), Case::Kebab);
+        assert_eq!(get_case(TRAIN), Case::Train);
+        assert_eq!(get_case(SPACED), Case::Spaced);
 
         assert_eq!(get_case("hello-new_world"), Case::None);
         assert_eq!(get_case("hello-World"), Case::None);
