@@ -87,6 +87,11 @@ fn main() {
     stdout(&result);
 }
 
+fn is_first_upper(word: &str) -> bool {
+    let v: Vec<char> = word.chars().collect();
+    v[0].is_uppercase()
+}
+
 fn get_case(word: &str) -> Case {
     if word.contains('-') {
         if word.contains(' ') || word.contains('_') {
@@ -117,10 +122,7 @@ fn get_case(word: &str) -> Case {
             return Case::Upper;
         }
 
-        let v: Vec<char> = word.chars().collect();
-        let is_first_upper = v[0].is_uppercase();
-
-        if is_first_upper {
+        if is_first_upper(&word) {
             return Case::Pascal;
         } else {
             return Case::Camel;
