@@ -154,7 +154,7 @@ fn camel_case(word: &str, case: Case) -> String {
         Case::Camel => return word.to_string(),
         Case::Pascal => return lower_first_letter(word),
         Case::Flat => return word.to_string(),
-        Case::Upper => return word.to_string(),
+        Case::Upper => return word.to_string().to_lowercase(),
         _ => (),
     }
 
@@ -322,8 +322,8 @@ mod tests {
             camel_case(word, get_case(word))
         }
 
-        assert_eq!(camel_case_helper(FLAT), FLAT); // no camel_case
-        assert_eq!(camel_case_helper(UPPER), UPPER); // no camel_case
+        assert_eq!(camel_case_helper(FLAT), FLAT);
+        assert_eq!(camel_case_helper(UPPER), FLAT);
         assert_eq!(camel_case_helper(CAMEL), CAMEL);
         assert_eq!(camel_case_helper(PASCAL), CAMEL);
         assert_eq!(camel_case_helper(SNAKE), CAMEL);
