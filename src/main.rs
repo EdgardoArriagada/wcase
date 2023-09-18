@@ -3,13 +3,9 @@ use std::fmt;
 
 use args::Args;
 
-extern crate regex;
-use regex::Regex;
 
 use clap::Parser;
 
-static CAMEL_REGEX: &str = r"^[a-z]+(?:[A-Z][a-z]+)*$";
-static PASCAL_REGEX: &str = r"^[A-Z][a-z]+(?:[A-Z][a-z]+)*$";
 
 #[derive(Debug)]
 enum Case {
@@ -104,14 +100,13 @@ fn get_case(word: &str) -> Case {
             return Case::Upper;
         }
 
-        let camel_case = Regex::new(CAMEL_REGEX).unwrap();
-        if camel_case.is_match(word) {
-            return Case::Camel;
-        }
+        let v: Vec<char> = word.chars().collect();
+        let is_first_upper = v[0].is_uppercase();
 
-        let pascal_case = Regex::new(PASCAL_REGEX).unwrap();
-        if pascal_case.is_match(word) {
+        if is_first_upper {
             return Case::Pascal;
+        } else {
+            return Case::Camel;
         }
     }
 
