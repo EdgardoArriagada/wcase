@@ -113,14 +113,14 @@ fn get_case(word: &str) -> Case {
         }
     }
 
-    let word_lower = word.to_lowercase();
+    let is_lowercased = word.to_lowercase() == word;
 
     if !contains_dash && !contains_underscore {
-        if contains_space && word_lower == word {
+        if contains_space && is_lowercased {
             return Case::Spaced;
         }
 
-        if word_lower == word {
+        if is_lowercased {
             return Case::Flat;
         } else if word.to_uppercase() == word {
             return Case::Upper;
@@ -134,7 +134,7 @@ fn get_case(word: &str) -> Case {
     }
 
     if contains_underscore {
-        if word_lower == word {
+        if is_lowercased {
             return Case::Snake;
         } else if word.to_uppercase() == word {
             return Case::AllCaps;
@@ -142,7 +142,7 @@ fn get_case(word: &str) -> Case {
     }
 
     if contains_dash {
-        if word_lower == word {
+        if is_lowercased {
             return Case::Kebab;
         } else if word.to_uppercase() == word {
             return Case::Train;
