@@ -1,7 +1,7 @@
 mod args;
 use args::Args;
 use clap::Parser;
-use std::fmt;
+use std::{fmt, process};
 
 #[derive(Debug)]
 enum Case {
@@ -52,14 +52,23 @@ impl PartialEq for Case {
     }
 }
 
+fn stderr(msg: &str) {
+    eprintln!("{}", msg);
+    process::exit(1);
+}
+
+fn stdout(msg: &str) {
+    println!("{}", msg);
+    process::exit(0);
+}
+
 fn main() {
     let args = Args::parse();
 
     let case = get_case(&args.word);
 
     if case == Case::None {
-        println!("Invalid input");
-        return;
+        stderr("Invalid input");
     }
 
     let result = match args {
@@ -75,7 +84,7 @@ fn main() {
         _ => case.to_string(),
     };
 
-    println!("{}", result);
+    stdout(&result);
 }
 
 fn get_case(word: &str) -> Case {
