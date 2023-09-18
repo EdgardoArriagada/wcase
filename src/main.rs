@@ -93,26 +93,30 @@ fn is_first_upper(word: &str) -> bool {
 }
 
 fn get_case(word: &str) -> Case {
-    if word.contains('-') {
-        if word.contains(' ') || word.contains('_') {
+    let contains_dash = word.contains('-');
+    let contains_underscore = word.contains('_');
+    let contains_space = word.contains(' ');
+
+    if contains_dash {
+        if contains_space || contains_underscore {
             return Case::None;
         }
     }
-    if word.contains('_') {
-        if word.contains(' ') || word.contains('-') {
+    if contains_underscore {
+        if contains_space || contains_dash {
             return Case::None;
         }
     }
-    if word.contains(' ') {
-        if word.contains('-') || word.contains('_') {
+    if contains_space {
+        if contains_dash || contains_underscore {
             return Case::None;
         }
     }
 
     let word_lower = word.to_lowercase();
 
-    if !word.contains('-') && !word.contains('_') {
-        if word.contains(' ') && word_lower == word {
+    if !contains_dash && !contains_underscore {
+        if contains_space && word_lower == word {
             return Case::Spaced;
         }
 
@@ -129,7 +133,7 @@ fn get_case(word: &str) -> Case {
         }
     }
 
-    if word.contains('_') {
+    if contains_underscore {
         if word_lower == word {
             return Case::Snake;
         } else if word.to_uppercase() == word {
@@ -137,7 +141,7 @@ fn get_case(word: &str) -> Case {
         }
     }
 
-    if word.contains('-') {
+    if contains_dash {
         if word_lower == word {
             return Case::Kebab;
         } else if word.to_uppercase() == word {
