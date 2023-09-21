@@ -97,20 +97,11 @@ fn get_case(word: &str) -> Case {
     let contains_underscore = word.contains('_');
     let contains_space = word.contains(' ');
 
-    if contains_dash {
-        if contains_space || contains_underscore {
-            return Case::None;
-        }
-    }
-    if contains_underscore {
-        if contains_space || contains_dash {
-            return Case::None;
-        }
-    }
-    if contains_space {
-        if contains_dash || contains_underscore {
-            return Case::None;
-        }
+    if contains_dash && contains_underscore
+        || contains_dash && contains_space
+        || contains_underscore && contains_space
+    {
+        return Case::None;
     }
 
     let is_lowercased = word.to_lowercase() == word;
