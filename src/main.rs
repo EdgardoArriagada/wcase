@@ -313,6 +313,7 @@ fn snake_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", "_"),
         Case::Train => return word.replace("-", "_").to_lowercase(),
         Case::Spaced => return word.replace(" ", "_").to_lowercase(),
+        Case::Title => return word.replace(" ", "_").to_lowercase(),
         Case::HttpHeader => return word.replace("-", "_").to_lowercase(),
         _ => camel_or_pascal_to_token(word, '_'),
     }
@@ -327,6 +328,7 @@ fn all_caps_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", "_").to_uppercase(),
         Case::Train => return word.replace("-", "_"),
         Case::Spaced => return word.replace(" ", "_").to_uppercase(),
+        Case::Title => return word.replace(" ", "_").to_uppercase(),
         Case::HttpHeader => return word.replace("-", "_").to_uppercase(),
         _ => camel_or_pascal_to_token(word, '_').to_uppercase(),
     }
@@ -341,6 +343,7 @@ fn kebab_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.to_string(),
         Case::Train => return word.to_lowercase(),
         Case::Spaced => return word.replace(" ", "-"),
+        Case::Title => return word.replace(" ", "-").to_lowercase(),
         Case::HttpHeader => return word.to_lowercase(),
         _ => camel_or_pascal_to_token(word, '-'),
     }
@@ -355,6 +358,7 @@ fn train_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.to_uppercase(),
         Case::Train => return word.to_string(),
         Case::Spaced => return word.replace(" ", "-").to_uppercase(),
+        Case::Title => return word.replace(" ", "-").to_uppercase(),
         Case::HttpHeader => return word.replace("_", "-").to_uppercase(),
         _ => camel_or_pascal_to_token(word, '-').to_uppercase(),
     }
@@ -369,6 +373,7 @@ fn spaced_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", " "),
         Case::Train => return word.replace("-", " ").to_lowercase(),
         Case::Spaced => return word.to_string(),
+        Case::Title => return word.to_lowercase(),
         Case::HttpHeader => return word.replace("-", " ").to_lowercase(),
         _ => camel_or_pascal_to_token(word, ' '),
     }
@@ -432,6 +437,7 @@ mod tests {
         assert_eq!(flat_case(KEBAB), FLAT);
         assert_eq!(flat_case(TRAIN), FLAT);
         assert_eq!(flat_case(SPACED), FLAT);
+        assert_eq!(flat_case(TITLE), FLAT);
         assert_eq!(flat_case(HTTP_HEADER), FLAT);
     }
 
@@ -446,6 +452,7 @@ mod tests {
         assert_eq!(upper_case(KEBAB), UPPER);
         assert_eq!(upper_case(TRAIN), UPPER);
         assert_eq!(upper_case(SPACED), UPPER);
+        assert_eq!(upper_case(TITLE), UPPER);
         assert_eq!(upper_case(HTTP_HEADER), UPPER);
     }
 
@@ -464,6 +471,7 @@ mod tests {
         assert_eq!(camel_case_helper(KEBAB), CAMEL);
         assert_eq!(camel_case_helper(TRAIN), CAMEL);
         assert_eq!(camel_case_helper(SPACED), CAMEL);
+        assert_eq!(camel_case_helper(TITLE), CAMEL);
         assert_eq!(camel_case_helper(HTTP_HEADER), CAMEL);
     }
 
@@ -482,6 +490,7 @@ mod tests {
         assert_eq!(pascal_case_helper(KEBAB), PASCAL);
         assert_eq!(pascal_case_helper(TRAIN), PASCAL);
         assert_eq!(pascal_case_helper(SPACED), PASCAL);
+        assert_eq!(pascal_case_helper(TITLE), PASCAL);
         assert_eq!(pascal_case_helper(HTTP_HEADER), PASCAL);
     }
 
@@ -500,6 +509,7 @@ mod tests {
         assert_eq!(snake_case_helper(KEBAB), SNAKE);
         assert_eq!(snake_case_helper(TRAIN), SNAKE);
         assert_eq!(snake_case_helper(SPACED), SNAKE);
+        assert_eq!(snake_case_helper(TITLE), SNAKE);
         assert_eq!(snake_case_helper(HTTP_HEADER), SNAKE);
     }
 
@@ -518,6 +528,7 @@ mod tests {
         assert_eq!(all_caps_case_helper(KEBAB), ALL_CAPS);
         assert_eq!(all_caps_case_helper(TRAIN), ALL_CAPS);
         assert_eq!(all_caps_case_helper(SPACED), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(TITLE), ALL_CAPS);
         assert_eq!(all_caps_case_helper(HTTP_HEADER), ALL_CAPS);
     }
 
@@ -536,6 +547,7 @@ mod tests {
         assert_eq!(kebab_case_helper(KEBAB), KEBAB);
         assert_eq!(kebab_case_helper(TRAIN), KEBAB);
         assert_eq!(kebab_case_helper(SPACED), KEBAB);
+        assert_eq!(kebab_case_helper(TITLE), KEBAB);
         assert_eq!(kebab_case_helper(HTTP_HEADER), KEBAB);
     }
 
@@ -554,6 +566,7 @@ mod tests {
         assert_eq!(train_case_helper(KEBAB), TRAIN);
         assert_eq!(train_case_helper(TRAIN), TRAIN);
         assert_eq!(train_case_helper(SPACED), TRAIN);
+        assert_eq!(train_case_helper(TITLE), TRAIN);
         assert_eq!(train_case_helper(HTTP_HEADER), TRAIN);
     }
 
@@ -572,6 +585,7 @@ mod tests {
         assert_eq!(spaced_case_helper(KEBAB), SPACED);
         assert_eq!(spaced_case_helper(TRAIN), SPACED);
         assert_eq!(spaced_case_helper(SPACED), SPACED);
+        assert_eq!(spaced_case_helper(TITLE), SPACED);
         assert_eq!(spaced_case_helper(HTTP_HEADER), SPACED);
     }
 
@@ -590,6 +604,7 @@ mod tests {
         assert_eq!(http_header_case_helper(KEBAB), HTTP_HEADER);
         assert_eq!(http_header_case_helper(TRAIN), HTTP_HEADER);
         assert_eq!(http_header_case_helper(SPACED), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(TITLE), HTTP_HEADER);
         assert_eq!(http_header_case_helper(HTTP_HEADER), HTTP_HEADER);
     }
 
