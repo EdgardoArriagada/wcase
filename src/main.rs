@@ -125,7 +125,7 @@ fn get_case(word: &str) -> Case {
             } else if is_title_case(&word) {
                 return Case::Title;
             }
-        }
+        } else {
 
         if is_lowercased {
             return Case::Flat;
@@ -138,6 +138,8 @@ fn get_case(word: &str) -> Case {
         } else {
             return Case::Camel;
         }
+        }
+
     }
 
     if contains_underscore {
@@ -659,5 +661,6 @@ mod tests {
         assert_eq!(get_case("hello new-world"), Case::None);
         assert_eq!(get_case("hello_new-world of programming"), Case::None);
         assert_eq!(get_case("Broken-HttP-Header"), Case::None);
+        assert_eq!(get_case("Broken space case"), Case::None);
     }
 }
