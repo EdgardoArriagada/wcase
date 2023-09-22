@@ -143,12 +143,46 @@ fn get_case(word: &str) -> Case {
             return Case::Kebab;
         } else if word.to_uppercase() == word {
             return Case::Train;
-        } else if is_first_upper(&word) {
+        } else if is_train_case(&word) {
             return Case::HttpHeader;
         }
     }
 
     return Case::None;
+}
+
+fn is_train_case(word: &str) -> bool {
+    let mut first = true;
+    let mut found_dash = false;
+
+    for c in word.chars() {
+        if first {
+            if !c.is_uppercase() || c == '-' || c == '_' || c == ' ' {
+                return false;
+            }
+            first = false;
+            continue;
+        }
+
+        if found_dash {
+            if !c.is_uppercase() {
+                return false;
+            }
+            found_dash = false;
+            continue;
+        }
+
+        if c == '-' {
+            found_dash = true;
+            continue;
+        }
+
+        if c.is_uppercase() {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 fn capitalize_first_letter(word: &str) -> String {
@@ -558,5 +592,6 @@ mod tests {
         assert_eq!(get_case("hello-World"), Case::None);
         assert_eq!(get_case("hello new-world"), Case::None);
         assert_eq!(get_case("hello_new-world of programming"), Case::None);
+        assert_eq!(get_case("Broken-HttP-Header"), Case::None);
     }
 }
