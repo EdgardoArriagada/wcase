@@ -14,6 +14,7 @@ enum Case {
     Kebab,
     Train,
     Spaced,
+    Title,
     HttpHeader,
     None,
 }
@@ -30,6 +31,7 @@ impl fmt::Display for Case {
             Case::Kebab => write!(f, "kebab"),
             Case::Train => write!(f, "train"),
             Case::Spaced => write!(f, "spaced"),
+            Case::Title => write!(f, "title"),
             Case::HttpHeader => write!(f, "http_header"),
             Case::None => write!(f, "none"),
         }
@@ -48,6 +50,7 @@ impl PartialEq for Case {
             (Case::Kebab, Case::Kebab) => true,
             (Case::Train, Case::Train) => true,
             (Case::Spaced, Case::Spaced) => true,
+            (Case::Title, Case::Title) => true,
             (Case::HttpHeader, Case::HttpHeader) => true,
             (Case::None, Case::None) => true,
             _ => false,
