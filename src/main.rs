@@ -318,16 +318,32 @@ fn spaced_case(word: &str, case: Case) -> String {
 
 fn http_header_case(word: &str, case: Case) -> String {
     match case {
-        // this is all wrong
-        Case::Snake => return word.replace("_", "-"),
-        Case::AllCaps => return word.replace("_", "-").to_lowercase(),
-        Case::Flat => return word.to_lowercase(),
-        Case::Upper => return word.to_lowercase(),
-        Case::Kebab => return word.to_string(),
-        Case::Train => return word.to_lowercase(),
-        Case::Spaced => return word.replace(" ", "-"),
-        _ => camel_or_pascal_to_upper_token(word, '-'),
+        Case::Flat => return capitalize_first_letter(&word),
+        Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
+        Case::Camel => return camel_or_pascal_to_upper_token(word, '-'),
+        Case::Pascal => return camel_or_pascal_to_upper_token(word, '-'),
+        _ => (),
+    };
+
+    let mut result = String::new();
+    let mut first = true;
+
+    for part in word
+        .to_lowercase()
+        .split(|c| c == '-' || c == '_' || c == ' ')
+    {
+        if first {
+            result.push_str(&part[..1].to_uppercase());
+            result.push_str(&part[1..].to_lowercase());
+            first = false;
+        } else {
+            result.push('-');
+            result.push_str(&part[..1].to_uppercase());
+            result.push_str(&part[1..].to_lowercase());
+        }
     }
+
+    result
 }
 
 #[cfg(test)]
@@ -499,14 +515,14 @@ mod tests {
 
         assert_eq!(http_header_case_helper(FLAT), BROKEN_PASCAL);
         assert_eq!(http_header_case_helper(UPPER), BROKEN_PASCAL);
-        // assert_eq!(http_header_case_helper(CAMEL), HTTP_HEADER);
-        // assert_eq!(http_header_case_helper(PASCAL), HTTP_HEADER);
-        // assert_eq!(http_header_case_helper(SNAKE), HTTP_HEADER);
-        // assert_eq!(http_header_case_helper(ALL_CAPS), HTTP_HEADER);
-        // assert_eq!(http_header_case_helper(KEBAB), HTTP_HEADER);
-        // assert_eq!(http_header_case_helper(TRAIN), HTTP_HEADER);
-        // assert_eq!(http_header_case_helper(SPACED), HTTP_HEADER);
-        // assert_eq!(http_header_case_helper(HTTP_HEADER), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(CAMEL), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(PASCAL), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(SNAKE), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(ALL_CAPS), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(KEBAB), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(TRAIN), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(SPACED), HTTP_HEADER);
+        assert_eq!(http_header_case_helper(HTTP_HEADER), HTTP_HEADER);
     }
 
     #[test]
