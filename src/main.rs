@@ -143,6 +143,8 @@ fn get_case(word: &str) -> Case {
             return Case::Kebab;
         } else if word.to_uppercase() == word {
             return Case::Train;
+        } else if is_first_upper(&word) {
+            return Case::HttpHeader;
         }
     }
 
@@ -260,6 +262,7 @@ fn snake_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", "_"),
         Case::Train => return word.replace("-", "_").to_lowercase(),
         Case::Spaced => return word.replace(" ", "_").to_lowercase(),
+        Case::HttpHeader => return word.replace("-", "_").to_lowercase(),
         _ => camel_or_pascal_to_token(word, '_'),
     }
 }
@@ -273,6 +276,7 @@ fn all_caps_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", "_").to_uppercase(),
         Case::Train => return word.replace("-", "_"),
         Case::Spaced => return word.replace(" ", "_").to_uppercase(),
+        Case::HttpHeader => return word.replace("-", "_").to_uppercase(),
         _ => camel_or_pascal_to_token(word, '_').to_uppercase(),
     }
 }
@@ -286,6 +290,7 @@ fn kebab_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.to_string(),
         Case::Train => return word.to_lowercase(),
         Case::Spaced => return word.replace(" ", "-"),
+        Case::HttpHeader => return word.to_lowercase(),
         _ => camel_or_pascal_to_token(word, '-'),
     }
 }
@@ -299,6 +304,7 @@ fn train_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.to_uppercase(),
         Case::Train => return word.to_string(),
         Case::Spaced => return word.replace(" ", "-").to_uppercase(),
+        Case::HttpHeader => return word.replace("_", "-").to_uppercase(),
         _ => camel_or_pascal_to_token(word, '-').to_uppercase(),
     }
 }
@@ -312,6 +318,7 @@ fn spaced_case(word: &str, case: Case) -> String {
         Case::Kebab => return word.replace("-", " "),
         Case::Train => return word.replace("-", " ").to_lowercase(),
         Case::Spaced => return word.to_string(),
+        Case::HttpHeader => return word.replace("-", " ").to_lowercase(),
         _ => camel_or_pascal_to_token(word, ' '),
     }
 }
@@ -373,6 +380,7 @@ mod tests {
         assert_eq!(flat_case(KEBAB), FLAT);
         assert_eq!(flat_case(TRAIN), FLAT);
         assert_eq!(flat_case(SPACED), FLAT);
+        assert_eq!(flat_case(HTTP_HEADER), FLAT);
     }
 
     #[test]
@@ -386,6 +394,7 @@ mod tests {
         assert_eq!(upper_case(KEBAB), UPPER);
         assert_eq!(upper_case(TRAIN), UPPER);
         assert_eq!(upper_case(SPACED), UPPER);
+        assert_eq!(upper_case(HTTP_HEADER), UPPER);
     }
 
     #[test]
@@ -403,6 +412,7 @@ mod tests {
         assert_eq!(camel_case_helper(KEBAB), CAMEL);
         assert_eq!(camel_case_helper(TRAIN), CAMEL);
         assert_eq!(camel_case_helper(SPACED), CAMEL);
+        assert_eq!(camel_case_helper(HTTP_HEADER), CAMEL);
     }
 
     #[test]
@@ -420,6 +430,7 @@ mod tests {
         assert_eq!(pascal_case_helper(KEBAB), PASCAL);
         assert_eq!(pascal_case_helper(TRAIN), PASCAL);
         assert_eq!(pascal_case_helper(SPACED), PASCAL);
+        assert_eq!(pascal_case_helper(HTTP_HEADER), PASCAL);
     }
 
     #[test]
@@ -437,6 +448,7 @@ mod tests {
         assert_eq!(snake_case_helper(KEBAB), SNAKE);
         assert_eq!(snake_case_helper(TRAIN), SNAKE);
         assert_eq!(snake_case_helper(SPACED), SNAKE);
+        assert_eq!(snake_case_helper(HTTP_HEADER), SNAKE);
     }
 
     #[test]
@@ -454,6 +466,7 @@ mod tests {
         assert_eq!(all_caps_case_helper(KEBAB), ALL_CAPS);
         assert_eq!(all_caps_case_helper(TRAIN), ALL_CAPS);
         assert_eq!(all_caps_case_helper(SPACED), ALL_CAPS);
+        assert_eq!(all_caps_case_helper(HTTP_HEADER), ALL_CAPS);
     }
 
     #[test]
@@ -471,6 +484,7 @@ mod tests {
         assert_eq!(kebab_case_helper(KEBAB), KEBAB);
         assert_eq!(kebab_case_helper(TRAIN), KEBAB);
         assert_eq!(kebab_case_helper(SPACED), KEBAB);
+        assert_eq!(kebab_case_helper(HTTP_HEADER), KEBAB);
     }
 
     #[test]
@@ -488,10 +502,11 @@ mod tests {
         assert_eq!(train_case_helper(KEBAB), TRAIN);
         assert_eq!(train_case_helper(TRAIN), TRAIN);
         assert_eq!(train_case_helper(SPACED), TRAIN);
+        assert_eq!(train_case_helper(HTTP_HEADER), TRAIN);
     }
 
     #[test]
-    fn tesp_spaced_case() {
+    fn test_spaced_case() {
         fn spaced_case_helper(word: &str) -> String {
             spaced_case(word, get_case(word))
         }
@@ -505,6 +520,7 @@ mod tests {
         assert_eq!(spaced_case_helper(KEBAB), SPACED);
         assert_eq!(spaced_case_helper(TRAIN), SPACED);
         assert_eq!(spaced_case_helper(SPACED), SPACED);
+        assert_eq!(spaced_case_helper(HTTP_HEADER), SPACED);
     }
 
     #[test]
@@ -536,6 +552,7 @@ mod tests {
         assert_eq!(get_case(KEBAB), Case::Kebab);
         assert_eq!(get_case(TRAIN), Case::Train);
         assert_eq!(get_case(SPACED), Case::Spaced);
+        assert_eq!(get_case(HTTP_HEADER), Case::HttpHeader);
 
         assert_eq!(get_case("hello-new_world"), Case::None);
         assert_eq!(get_case("hello-World"), Case::None);
