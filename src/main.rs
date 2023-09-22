@@ -87,6 +87,7 @@ fn main() {
         Args { kebab: true, .. } => kebab_case(&args.word, case),
         Args { train: true, .. } => train_case(&args.word, case),
         Args { spaced: true, .. } => spaced_case(&args.word, case),
+        Args { title: true, .. } => title_case(&args.word, case),
         Args {
             http_header: true, ..
         } => http_header_case(&args.word, case),
@@ -379,15 +380,7 @@ fn spaced_case(word: &str, case: Case) -> String {
     }
 }
 
-fn http_header_case(word: &str, case: Case) -> String {
-    match case {
-        Case::Flat => return capitalize_first_letter(&word),
-        Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
-        Case::Camel => return camel_or_pascal_to_upper_token(word, '-'),
-        Case::Pascal => return camel_or_pascal_to_upper_token(word, '-'),
-        _ => (),
-    };
-
+fn token_to_token_capitalized_case(word: &str, token: char) -> String {
     let mut result = String::new();
     let mut first = true;
 
@@ -400,13 +393,37 @@ fn http_header_case(word: &str, case: Case) -> String {
             result.push_str(&part[1..].to_lowercase());
             first = false;
         } else {
-            result.push('-');
+            result.push(token);
             result.push_str(&part[..1].to_uppercase());
             result.push_str(&part[1..].to_lowercase());
         }
     }
 
     result
+}
+
+fn title_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Flat => return capitalize_first_letter(&word),
+        Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
+        Case::Camel => return camel_or_pascal_to_upper_token(word, ' '),
+        Case::Pascal => return camel_or_pascal_to_upper_token(word, ' '),
+        _ => (),
+    }
+
+    token_to_token_capitalized_case(word, ' ')
+}
+
+fn http_header_case(word: &str, case: Case) -> String {
+    match case {
+        Case::Flat => return capitalize_first_letter(&word),
+        Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
+        Case::Camel => return camel_or_pascal_to_upper_token(word, '-'),
+        Case::Pascal => return camel_or_pascal_to_upper_token(word, '-'),
+        _ => (),
+    };
+
+    token_to_token_capitalized_case(word, '-')
 }
 
 #[cfg(test)]
@@ -587,6 +604,25 @@ mod tests {
         assert_eq!(spaced_case_helper(SPACED), SPACED);
         assert_eq!(spaced_case_helper(TITLE), SPACED);
         assert_eq!(spaced_case_helper(HTTP_HEADER), SPACED);
+    }
+
+    #[test]
+    fn test_title_case() {
+        fn title_case_helper(word: &str) -> String {
+            title_case(word, get_case(word))
+        }
+
+        assert_eq!(title_case_helper(FLAT), BROKEN_PASCAL);
+        assert_eq!(title_case_helper(UPPER), BROKEN_PASCAL);
+        assert_eq!(title_case_helper(CAMEL), TITLE);
+        assert_eq!(title_case_helper(PASCAL), TITLE);
+        assert_eq!(title_case_helper(SNAKE), TITLE);
+        assert_eq!(title_case_helper(ALL_CAPS), TITLE);
+        assert_eq!(title_case_helper(KEBAB), TITLE);
+        assert_eq!(title_case_helper(TRAIN), TITLE);
+        assert_eq!(title_case_helper(SPACED), TITLE);
+        assert_eq!(title_case_helper(TITLE), TITLE);
+        assert_eq!(title_case_helper(HTTP_HEADER), TITLE);
     }
 
     #[test]
