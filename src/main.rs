@@ -408,10 +408,8 @@ fn title_case(word: &str, case: Case) -> String {
         Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
         Case::Camel => return camel_or_pascal_to_upper_token(word, ' '),
         Case::Pascal => return camel_or_pascal_to_upper_token(word, ' '),
-        _ => (),
+        _ => token_to_token_capitalized_case(word, ' '),
     }
-
-    token_to_token_capitalized_case(word, ' ')
 }
 
 fn http_header_case(word: &str, case: Case) -> String {
@@ -420,10 +418,8 @@ fn http_header_case(word: &str, case: Case) -> String {
         Case::Upper => return capitalize_first_letter(&word.to_lowercase()),
         Case::Camel => return camel_or_pascal_to_upper_token(word, '-'),
         Case::Pascal => return camel_or_pascal_to_upper_token(word, '-'),
-        _ => (),
-    };
-
-    token_to_token_capitalized_case(word, '-')
+        _ => token_to_token_capitalized_case(word, '-'),
+    }
 }
 
 #[cfg(test)]
