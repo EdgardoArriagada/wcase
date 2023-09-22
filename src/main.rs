@@ -116,8 +116,14 @@ fn get_case(word: &str) -> Case {
     let is_lowercased = word.to_lowercase() == word;
 
     if !contains_dash && !contains_underscore {
-        if contains_space && is_lowercased {
-            return Case::Spaced;
+        if contains_space {
+            if is_lowercased {
+                return Case::Spaced;
+            } else if word.to_uppercase() == word {
+                return Case::Spaced;
+            } else if is_title_case(&word) {
+                return Case::Title;
+            }
         }
 
         if is_lowercased {
@@ -146,7 +152,7 @@ fn get_case(word: &str) -> Case {
             return Case::Kebab;
         } else if word.to_uppercase() == word {
             return Case::Train;
-        } else if is_train_case(&word) {
+        } else if is_http_header_case(&word) {
             return Case::HttpHeader;
         }
     }
@@ -154,9 +160,9 @@ fn get_case(word: &str) -> Case {
     return Case::None;
 }
 
-fn is_train_case(word: &str) -> bool {
+fn is_token_capitalized_case(word: &str, token: char) -> bool {
     let mut first = true;
-    let mut found_dash = false;
+    let mut found_token = false;
 
     for c in word.chars() {
         if first {
@@ -167,16 +173,16 @@ fn is_train_case(word: &str) -> bool {
             continue;
         }
 
-        if found_dash {
+        if found_token {
             if !c.is_uppercase() {
                 return false;
             }
-            found_dash = false;
+            found_token = false;
             continue;
         }
 
-        if c == '-' {
-            found_dash = true;
+        if c == token {
+            found_token = true;
             continue;
         }
 
@@ -186,6 +192,14 @@ fn is_train_case(word: &str) -> bool {
     }
 
     return true;
+}
+
+fn is_http_header_case(word: &str) -> bool {
+    is_token_capitalized_case(word, '-')
+}
+
+fn is_title_case(word: &str) -> bool {
+    is_token_capitalized_case(word, ' ')
 }
 
 fn capitalize_first_letter(word: &str) -> String {
@@ -404,6 +418,7 @@ mod tests {
     static KEBAB: &str = "hello-world";
     static TRAIN: &str = "HELLO-WORLD";
     static SPACED: &str = "hello world";
+    static TITLE: &str = "Hello World";
     static HTTP_HEADER: &str = "Hello-World";
 
     #[test]
@@ -589,6 +604,7 @@ mod tests {
         assert_eq!(get_case(KEBAB), Case::Kebab);
         assert_eq!(get_case(TRAIN), Case::Train);
         assert_eq!(get_case(SPACED), Case::Spaced);
+        assert_eq!(get_case(TITLE), Case::Title);
         assert_eq!(get_case(HTTP_HEADER), Case::HttpHeader);
 
         assert_eq!(get_case("hello-new_world"), Case::None);
