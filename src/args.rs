@@ -44,6 +44,10 @@ pub struct Args {
     #[clap(long)]
     pub http_header: bool,
 
+    /// transform to title case
+    #[clap(long)]
+    pub title: bool,
+
     /// word to transform
     #[clap(long, short)]
     pub word: String,
